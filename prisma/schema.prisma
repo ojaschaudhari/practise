@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Categories {
+  id            Int    @id @unique @default(autoincrement())
+  category_name String @db.VarChar(25)
+}
+
+model Orgs {
+  id        Int        @id @unique @default(autoincrement())
+  org_name  String     @db.VarChar(100)
+  city      String     @db.VarChar(25)
+  vendor_id Int
+  Vendors   Vendors    @relation(fields: [vendor_id], references: [id], onDelete: Cascade, map: "fk_orgs_to_vendors")
+  Products  Products[]
+
+  @@index([vendor_id], map: "fk_orgs_to_vendors")
+}
+
+model Products {
+  id              Int            @id @default(autoincrement())
+  name            String         @db.VarChar(50)
+  avail_city      String         @db.VarChar(25)
+  org_id          Int
+  category_id     Int
+  sub_category_id Int
+  Sub_Categories  Sub_Categories @relation(fields: [category_id, sub_category_id], references: [category_id, id], onDelete: Cascade, map: "fk_product_to_sub_category")
+  Orgs            Orgs           @relation(fields: [org_id], references: [id], onDelete: Cascade, map: "fk_product_to_orgs")
+
+  @@index([category_id, sub_category_id], map: "category_id")
+  @@index([org_id], map: "org_id")
+}
+
+model Sub_Categories {
+  id                Int        @id @unique @default(autoincrement())
+  sub_category_name String     @db.VarChar(25)
+  category_id       Int
+  Products          Products[]
+
+  @@index([category_id], map: "fk_sub_category_to_category")
+}
+
+model Vendor_Orgs {
+  id      Int    @id @unique @default(autoincrement())
+  orgs_id Json
+  city    String @db.VarChar(25)
+  name    String @db.VarChar(50)
+}
+
+model Vendors {
+  id       Int    @id @unique @default(autoincrement())
+  username String @db.VarChar(50)
+  password String @db.VarChar(100)
+  Orgs     Orgs[]
+}
