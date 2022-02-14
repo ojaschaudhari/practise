@@ -35,6 +35,7 @@ export class ProductsService {
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
+    console.log('update');
     return `This action updates a #${id} product`;
   }
 
