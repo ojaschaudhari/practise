@@ -64,6 +64,8 @@ export class CityService {
         console.log('err-', err);
       });
 
+    console.log('data', data);
+
     return data;
   }
 }
