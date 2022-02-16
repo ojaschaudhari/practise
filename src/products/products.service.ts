@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -25,7 +26,38 @@ export class ProductsService {
       where: {
         avail_city: city,
         category_id: cid,
-        sub_category_id: scid,
+      },
+    });
+  }
+
+  // SQL JOINS
+  findBycity(city: string) {
+    return this.prisma.orgs.findMany({
+      where: {
+        city: city,
+      },
+      select: {
+        id: true,
+        org_name: true,
+        Products: {
+          where: {
+            avail_city: city,
+          },
+          select: {
+            name: true,
+            id: true,
+            Product_details: {
+              select: {
+                p_img: true,
+              },
+            },
+          },
+        },
+        Vendors: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
   }

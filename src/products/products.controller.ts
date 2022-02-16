@@ -44,4 +44,10 @@ export class ProductsController {
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
+
+  // SQL JOINS
+  @Get('getstores/:city')
+  findBycity(@Param('city') city: string) {
+    return this.productsService.findBycity(city);
+  }
 }

@@ -24,14 +24,15 @@ model Orgs {
 }
 
 model Products {
-  id              Int            @id @default(autoincrement())
-  name            String         @db.VarChar(50)
-  avail_city      String         @db.VarChar(25)
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(50)
+  avail_city      String            @db.VarChar(25)
   org_id          Int
   category_id     Int
   sub_category_id Int
-  Sub_Categories  Sub_Categories @relation(fields: [category_id, sub_category_id], references: [category_id, id], onDelete: Cascade, map: "fk_product_to_sub_category")
-  Orgs            Orgs           @relation(fields: [org_id], references: [id], onDelete: Cascade, map: "fk_product_to_orgs")
+  Sub_Categories  Sub_Categories    @relation(fields: [category_id, sub_category_id], references: [category_id, id], onDelete: Cascade, map: "fk_product_to_sub_category")
+  Orgs            Orgs              @relation(fields: [org_id], references: [id], onDelete: Cascade, map: "fk_product_to_orgs")
+  Product_details Product_details[]
 
   @@index([category_id, sub_category_id], map: "category_id")
   @@index([org_id], map: "org_id")
@@ -58,4 +59,19 @@ model Vendors {
   username String @db.VarChar(50)
   password String @db.VarChar(100)
   Orgs     Orgs[]
+}
+
+model City {
+  id   Int    @id @unique @default(autoincrement())
+  city String @db.VarChar(25)
+}
+
+model Product_details {
+  id       Int      @id @unique @default(autoincrement())
+  pid      Int
+  p_img    String   @db.VarChar(100)
+  Products Products @relation(fields: [pid], references: [id], onDelete: Cascade, map: "fk_product_details_to_products")
+
+  @@index([pid], map: "fk_product_details_to_products")
+  
 }
