@@ -15,26 +15,30 @@ model Categories {
 model Orgs {
   id        Int        @id @unique @default(autoincrement())
   org_name  String     @db.VarChar(100)
-  city      String     @db.VarChar(25)
+  city      Int?
   vendor_id Int
+  City      City?      @relation(fields: [city], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_orgs_to_city")
   Vendors   Vendors    @relation(fields: [vendor_id], references: [id], onDelete: Cascade, map: "fk_orgs_to_vendors")
   Products  Products[]
 
+  @@index([city], map: "fk_orgs_to_city")
   @@index([vendor_id], map: "fk_orgs_to_vendors")
 }
 
 model Products {
   id              Int               @id @default(autoincrement())
   name            String            @db.VarChar(50)
-  avail_city      String            @db.VarChar(25)
+  avail_city      Int
   org_id          Int
   category_id     Int
   sub_category_id Int
+  City            City              @relation(fields: [avail_city], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_products_to_city")
   Sub_Categories  Sub_Categories    @relation(fields: [category_id, sub_category_id], references: [category_id, id], onDelete: Cascade, map: "fk_product_to_sub_category")
-  Orgs            Orgs              @relation(fields: [org_id], references: [id], onDelete: Cascade, map: "fk_product_to_orgs")
+  Orgs            Orgs              @relation(fields: [org_id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_product_to_orgs")
   Product_details Product_details[]
 
   @@index([category_id, sub_category_id], map: "category_id")
+  @@index([avail_city], map: "fk_products_to_city")
   @@index([org_id], map: "org_id")
 }
 
@@ -50,8 +54,11 @@ model Sub_Categories {
 model Vendor_Orgs {
   id      Int    @id @unique @default(autoincrement())
   orgs_id Json
-  city    String @db.VarChar(25)
+  city    Int?
   name    String @db.VarChar(50)
+  City    City?  @relation(fields: [city], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_vendor_orgs_to_city")
+
+  @@index([city], map: "fk_vendor_orgs_to_city")
 }
 
 model Vendors {
@@ -62,16 +69,20 @@ model Vendors {
 }
 
 model City {
-  id   Int    @id @unique @default(autoincrement())
-  city String @db.VarChar(25)
+  id          Int           @id @unique @default(autoincrement())
+  city        String        @db.VarChar(50)
+  state       String        @db.VarChar(50)
+  country     String        @db.VarChar(50)
+  Orgs        Orgs[]
+  Products    Products[]
+  Vendor_Orgs Vendor_Orgs[]
 }
 
 model Product_details {
   id       Int      @id @unique @default(autoincrement())
   pid      Int
   p_img    String   @db.VarChar(100)
-  Products Products @relation(fields: [pid], references: [id], onDelete: Cascade, map: "fk_product_details_to_products")
+  Products Products @relation(fields: [pid], references: [id], onDelete: Cascade,onUpdate: Cascade, map: "fk_product_details_to_products")
 
   @@index([pid], map: "fk_product_details_to_products")
-  
 }

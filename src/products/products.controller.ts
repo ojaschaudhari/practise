@@ -11,6 +11,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Prisma } from '@prisma/client';
 
 @Controller('products')
 export class ProductsController {
@@ -18,12 +19,13 @@ export class ProductsController {
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
+    
     return this.productsService.create(createProductDto);
   }
 
   @Get('getitems/:city&:cid&:scid')
   findAll(
-    @Param('city') city: string,
+    @Param('city', ParseIntPipe) city: number,
     @Param('cid', ParseIntPipe) cid: number,
     @Param('scid', ParseIntPipe) scid: number,
   ) {
@@ -47,7 +49,7 @@ export class ProductsController {
 
   // SQL JOINS
   @Get('getstores/:city')
-  findBycity(@Param('city') city: string) {
+  findBycity(@Param('city', ParseIntPipe) city: number) {
     return this.productsService.findBycity(city);
   }
 }
